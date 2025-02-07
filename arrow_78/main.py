@@ -14,8 +14,8 @@ from functions.data_load import prepareMolecules
 from functions.image_creation import finalImageCreation
 import functions.logger as logger
 from functions.logger import catch_and_log
-from functions.data_aug.blurr_images import blurr_images
-from functions.data_aug.coline_images import coline_images
+#from functions.data_aug.blurr_images import blurr_images
+#from functions.data_aug.coline_images import coline_images
 from functions.data_aug.data_aug import own_transforms
 
 # Parser
@@ -91,7 +91,7 @@ loc_parser.add_argument("-li", "--labelled-images" ,
 
 file_arg = loc_parser.parse_args()
 
-
+'''
 if __name__ == "__main__":
 
     # # Logger
@@ -113,7 +113,30 @@ if __name__ == "__main__":
     p_horiz = file_arg.p_horiz
     p_vert = file_arg.p_vert
     p_bright = file_arg.p_bright
+'''
+if __name__ == "__main__":
 
+    # Logger
+    now = datetime.now()
+    # Replace ':' in the timestamp with '-' to avoid directory name issues
+    formatted_time = now.strftime("%b-%d-%Y_%H-%M-%S")
+    loc = file_arg.log_folder + '/' + formatted_time  # 'logs' file_arg.folder
+    os.makedirs(loc, exist_ok=True)  # Use makedirs to create intermediate directories if needed
+    logger.init_logger(loc)
+
+    # Labelled Images (Yes/No):
+    labelled_images = file_arg.labelled_images
+
+    runExperiment(loc, labelled_images)
+    # DATA AUGMENTATION 
+    blurred = file_arg.blurred
+    skeletonization = file_arg.skeletonization
+    colored_lines = file_arg.colored_lines
+    crop = file_arg.crop
+    p_horiz = file_arg.p_horiz
+    p_vert = file_arg.p_vert
+    p_bright = file_arg.p_bright
+    
     ## TO USE only if DL Model has no Augmentations.
     # if "train" in train_path:
 
