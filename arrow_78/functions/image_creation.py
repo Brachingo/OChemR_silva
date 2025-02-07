@@ -13,7 +13,7 @@ from PIL import ImageDraw, ImageFont
 from functions.classes.drawings import Molecule, Symbol, WhiteBackground
 from functions.labellingImage import writeLabelsInFile
 from functions.logger import catch_and_log
-from functions.data_aug.skeletonization import skelet_images
+#from functions.data_aug.skeletonization import skelet_images
 
 # image_folder = "/dccstor/arrow_backup/images/train/"
 # image_folder = "results/images/"
