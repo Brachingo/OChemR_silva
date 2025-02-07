@@ -6,7 +6,7 @@ import operator
 import sys
 import argparse
 import math
-# import cv2
+import cv2
 import matplotlib as mtpl
 mtpl.use('TkAgg')
 import matplotlib.pyplot as plt
