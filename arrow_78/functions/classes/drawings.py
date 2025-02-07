@@ -17,7 +17,9 @@ import random
 import secrets
 import string
 # Own functions
-from functions.labellingImage import labellingImage
+# Get from prev folder+file
+
+from ..labellingImage import labellingImage
 
 class Molecule():
     " Instantiate a Molecule image. "
@@ -117,10 +119,20 @@ class Symbol():
             bckground.paste(foreground,(xpos,ypos),foreground) # im2 as 3rd param, to add white background.
             height_obj = width_obj
         else:
-            
+            pass
             # Paste the molecule to the image with the rectangle.
-            bckground.paste(foreground,(xpos,ypos),foreground) # im2 as 3rd param, to add white background.
-
+            #bckground.paste(foreground,(xpos,ypos),foreground) # im2 as 3rd param, to add white background.
+        
+        if foreground.mode != 'RGBA':
+            foreground = foreground.convert('RGBA')
+        # Get the alpha channel
+        alpha = foreground.split()[3]
+        # Create a white image of the same size with alpha channel
+        white = Image.new('L', foreground.size, 255)
+        # Combine the two images
+        foreground.putalpha(white)
+        bckground.paste(foreground,(xpos,ypos), alpha)
+        
         # Store arrow position
         arrow_x_coord = current_w + xpos - 1
         arrow_y_coord = current_h + ypos - 1
@@ -131,6 +143,7 @@ class Symbol():
 
     def drawArrowPIL(self,im, ptA, ptB, width=2, color=(0,0,0)):
         """Draw line from ptA to ptB with arrowhead at ptB"""
+        
         # Get drawing context
         draw = ImageDraw.Draw(im)
         # Draw the line without arrows
@@ -176,7 +189,9 @@ class Symbol():
         for it in range(0,random.randint(1,4)):
             txt = ''.join(secrets.choice(string.ascii_letters) for x in range(random.randint(min_,max_)))
             I1.text((xtext,yendtext),txt, font=myFont, fill=(0, 0, 0))
-            size_txt = I1.textsize(txt, font=myFont)
+            #size_txt = I1.textsize(txt, font=myFont)
+            bbox = I1.textbbox((xtext, yendtext), txt, font=myFont)
+            size_txt = (bbox[2] - bbox[0], bbox[3] - bbox[1])  # Width and height from bbox
             yendtext = yendtext + size_txt[1]
             xpostexts.append(size_txt[0])
         
@@ -393,7 +408,7 @@ class WhiteBackground():
         self.img_w = img_w
         self.img_h = img_h
         
-    
+    '''    
     def drawI(self,path,current_w, current_h,text):
         white_img = Image.open(path)
         white_img = white_img.resize((self.img_w,self.img_h))
@@ -428,4 +443,31 @@ class WhiteBackground():
             xpostexts.append(size_txt[0])        
         coords.append(['2', current_w + xtext, current_h + yinit, current_w + xtext + max(xpostexts),current_h + ytext])
         return 'white_img',white_img.convert("RGB"), coords
-        
+        '''
+    def drawI(self, path, current_w, current_h, text):
+        white_img = Image.open(path)
+        white_img = white_img.resize((self.img_w, self.img_h))
+        coords = []
+        xpos = 5
+        ypos = int(self.img_h / 2) + 20
+
+        # Prepare to add text
+        I = ImageDraw.Draw(white_img)
+        min_, max_ = 8, 12
+        myFont = ImageFont.truetype("fonts/arial.ttf", int(self.img_h * 0.08))
+        xtext = random.randint(2, int(self.img_w * 0.2))
+        ytext = random.randint(0, 50)
+        yinit = ytext
+        xpostexts = []
+
+        for _ in range(2, 6):
+            txt = ''.join(secrets.choice(string.ascii_letters) for _ in range(random.randint(min_, max_)))
+            I.text((xtext, ytext), txt, font=myFont, fill=(0, 0, 0))
+            # Use textbbox to calculate the bounding box
+            bbox = I.textbbox((xtext, ytext), txt, font=myFont)
+            size_txt = (bbox[2] - bbox[0], bbox[3] - bbox[1])  # Width and height
+            ytext = ytext + size_txt[1]
+            xpostexts.append(size_txt[0])
+
+        coords.append(['2', current_w + xtext, current_h + yinit, current_w + xtext + max(xpostexts), current_h + ytext])
+        return 'white_img', white_img.convert("RGB"), coords
