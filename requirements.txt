@@ -1,4 +1,4 @@
-# conda install:
+# conda install: Equal or Higher
 
 python==3.8.12
 opencv-python==4.5.5.62
